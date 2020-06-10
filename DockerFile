@@ -1,0 +1,4 @@
+FROM openjdk:8-jdk-alpine
+EXPOSE 3000
+COPY target/orderdetails-*.jar orderdetails.jar
+ENTRYPOINT ["java","-jar","/orderdetails.jar"]
