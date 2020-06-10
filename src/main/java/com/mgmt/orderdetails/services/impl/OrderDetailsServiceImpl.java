@@ -21,13 +21,16 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     public OrderDetailsResponse findOrderDetailsOfUser(Long userId) {
         OrderDetailsResponse detailsResponse = null;
 
-        ResponseEntity<UserResponseDto> userResponse = template.getForEntity("http://localhost:4000/users/" + userId,
+        String userServiceAddress = System.getenv().getOrDefault("SERVICE_USERS", "http://localhost:4000/users");
+        String orderServiceAddress = System.getenv().getOrDefault("SERVICE_ORDERS", "http://localhost:5000/orders");
+
+        ResponseEntity<UserResponseDto> userResponse = template.getForEntity(userServiceAddress + "/" + userId,
                 UserResponseDto.class);
         if (userResponse.getStatusCode().equals(HttpStatus.OK)) {
             detailsResponse = new OrderDetailsResponse();
             detailsResponse.setUserDetails(userResponse.getBody());
             OrderResponseDto[] orderResponse = template
-                    .getForEntity("http://localhost:5000/orders/" + userId, OrderResponseDto[].class).getBody();
+                    .getForEntity(orderServiceAddress + "/" + userId, OrderResponseDto[].class).getBody();
             detailsResponse.setOrderDetails(orderResponse);
         }
         return detailsResponse;
